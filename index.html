@@ -17,7 +17,7 @@
             position: absolute;
             height: 320px;
             width: 100%;
-            left: 0; 
+            left: 0;
             top: 10%;
             text-align: center;
             padding: 10px;
@@ -281,31 +281,46 @@
               imagePosition: 'top'
           });
         };
-        var rewardsByPoint = function (givenPoints) {
-            var possibilityForTiers = points[givenPoints.toString()].possibilityForTiers;
-            return rewards
-                    .map(function(reward, _index){
-                        return {
-                          name: reward.name,
-                          image: reward.image,
-                          score: possibilityForTiers[reward.tierID]
-                        }
-                    })
+        var rewardsByTiers = function (givenPoints) {
+            let results = {}
+            for (let tier in points[givenPoints].possibilityForTiers) {
+                results[tier] = rewards
+                                .reduce(function (rewardIds, reward, index) {
+                                    if (reward.tierID.toString() === tier) {
+                                        rewardIds.push(index);
+                                    }
+                                    return rewardIds;
+                                }, []);
+            }
+            return results;
+        }
+        var generateWeighedList = function (givenPoints) {
+            let weighedList = [];
+            let filteredRewardIndexes = rewardsByTiers(givenPoints);
+            for (let tier in filteredRewardIndexes) {
+                let tierPossibility = points[givenPoints].possibilityForTiers[tier];
+                let appearingTimes = tierPossibility * 100;
+
+                let weighedListEachTier =
+                    filteredRewardIndexes[tier]
+                        .reduce(function (list, rewardIndex) {
+                            list = list.concat(Array(appearingTimes).fill(rewardIndex));
+                            return list;
+                        }, []);
+                weighedList = weighedList.concat(weighedListEachTier)
+            }
+
+            return weighedList;
         };
-        var drawing = function (givenPoints) {
-            // return rewardsByPoint
+        var rand = function(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         };
         var lottery = function(givenPoints){
-            var list = canvas.getElementsByTagName('a');
-            var ret = rewardsByPoint(givenPoints)
-                .sort(function(a, b){
-                    return a.score - b.score;
-                })
-                .slice(0, 1)
-                .map(function(m){
-                  return '<p>Congratulations!<br/>You have won</p><p style="font-weight: bold;">' + m.name + '</p>' + '<img src="' + m.image + '"/>';
-                });
-            return ret;
+            let weighedList = generateWeighedList(givenPoints);
+            let randomReward = rand(0, weighedList.length-1);
+            let winning = rewards[weighedList[randomReward]];
+
+            return '<p>Congratulations!<br/>You have won</p><p style="font-weight: bold;">' + winning.name + '</p>' + '<img src="' + winning.image + '"/>'
         };
         var canvas = document.createElement('canvas');
         canvas.id = 'myCanvas';
@@ -348,7 +363,7 @@
                             $('#result').css('display', 'block').html('<span>This campaign has ended.</span>');
                             return
                         }
-                        $('#result').css('display', 'block').html('<span>' + ret.join('</span><span>') + '</span>');
+                        $('#result').css('display', 'block').html('<span>' + ret + '</span>');
                         TagCanvas.Reload('myCanvas');
                         setTimeout(function(){
                             localStorage.setItem(new Date().toString(), JSON.stringify(ret));
