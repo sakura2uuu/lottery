@@ -160,6 +160,7 @@
 <script type="text/javascript" src="js/vue.js"></script>
 <script type="text/javascript" src="js/tagcanvas.js"></script>
 <script type="text/javascript" src="js/rewards.js"></script>
+<script type="text/javascript" src="js/points.js"></script>
 <script type="text/javascript">
     (function(){
         var speed = function(){
@@ -178,10 +179,18 @@
             html.push('</ul>');
             return html.join('');
         };
-        var lottery = function(count){
+        var rewardsByPoint = function (givenPoints) {
+            return rewards
+                    .filter(function(reward, _index){
+                        return points[givenPoints.toString()].posibilityForTiers.keys.includes(tierID);
+                    })
+        };
+        var drawing = function (givenPoints) {
+            // return rewardsByPoint
+        }
+        var lottery = function(givenPoints){
             var list = canvas.getElementsByTagName('a');
-            var color = 'yellow';
-            var ret = rewards
+            var ret = rewardsByPoint(givenPoints)
                 .map(function(m){
                     return Object.assign({
                       score: Math.random()
@@ -192,7 +201,7 @@
                 })
                 .slice(0, count)
                 .map(function(m){
-                  return m.name + '<br/>' + m.phone; 
+                  return m.name + '<br/>' + m.phone;
                 });
             return ret;
         };

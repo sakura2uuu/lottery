@@ -1,19 +1,19 @@
 const points = {
   200: {
-    posibilityForTiers: {
+    possibilityForTiers: {
       2: 0.20,
       3: 0.50
     }
   },
   300: {
-    posibilityForTiers: {
+    possibilityForTiers: {
       1: 0.03,
       2: 0.30,
       3: 0.80
     },
   },
   500: {
-    posibilityForTiers: {
+    possibilityForTiers: {
       1: 0.05,
       2: 0.50
     },
