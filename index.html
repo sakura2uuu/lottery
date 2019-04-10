@@ -17,8 +17,8 @@
             position: absolute;
             height: 320px;
             width: 100%;
-            left: 0; top: 50%;
-            margin-top: -160px;
+            left: 0; 
+            top: 10%;
             text-align: center;
             padding: 10px;
             display: none;
@@ -26,7 +26,7 @@
         .result span {
             display: inline-block;
             font-size: 25px;
-            width: 150px;
+            width: 450px;
             background: #fff;
             line-height: 30px;
             color: #000;
@@ -34,6 +34,16 @@
             border-radius: 10px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
             padding: 10px 0;
+        }
+        .result p {
+            padding: 0 1rem;
+            word-break: normal;
+            font-size: 12px;
+            line-height: normal;
+        }
+        .result img {
+            padding: 1rem;
+            width: calc(100% - 2rem);
         }
         button, input, optgroup, select, textarea {
             color: inherit;
@@ -92,35 +102,55 @@
             background-image: linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1));
         }
 
-        .button-success, .button-error, .button-warning, .button-secondary {
+        button {
             color: white;
             border-radius: 4px;
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
         }
-        .button-success {
-            background: rgb(28, 184, 65);
+        .button-purple {
+            background: #c000c4;
+            color: white;
         }
-        .button-error {
-            background: rgb(202, 60, 60);
+        .button-red {
+            background: #d50032;
+            color: white;
         }
-        .button-warning {
-            background: rgb(223, 117, 20);
+        .button-green {
+            background: #3a773a;
+            color: white;
         }
-        .button-secondary {
-            background: rgb(66, 184, 221);
+        .button-black {
+            background: black;
+            color: white;
+        }
+        button:disabled {
+            background: #f1f1f1;
+            color: black;
         }
         .tools {
             position: absolute;
             bottom: 20px;
             right: 20px;
             text-align: center;
+            width: 15rem;
+        }
+        .tools p {
+            text-align: left;
+            font-weight: bold;
+            padding: 5px;
         }
         .tools .pure-button {
-            display: inline-block;
+            display: block;
             margin: 5px;
             padding: 10px 0;
             text-align: center;
-            width:50px;
+            width: 5rem;
+        }
+        .tools .pure-button.points {
+          width: 8rem;
+        }
+        .tools .pure-button.button-red {
+          width: 12rem;
         }
         .mask {
             -webkit-filter:blur(5px);
@@ -135,26 +165,77 @@
             text-align: right;
             margin-right: 30px;
         }
+        .topbar {
+          background-color: black;
+          padding: 0.5rem 0;
+          font-weight: 600;
+          font-size: 12px;
+          color: white;
+          position: absolute;
+          width: 100%;
+          z-index: 1;
+        }
+        .nav-item {
+          display: inline-block;
+        }
+        a:-webkit-any-link {
+          color: white;
+          text-decoration: none;
+          text-transform: uppercase;
+          font-size: 10px;
+        }
+        .my-account-icon {
+          background-image: url('img/account.svg');
+          width: 13px;
+          height: 15px;
+          background-repeat: no-repeat;
+          background-size: cover;
+          display: inline-block;
+          margin: 0 0.5rem;
+        }
     </style>
 </head>
 <body>
+  <div class='container' id='container'>
+  <div class="topbar fixed-top js-topbar">
+    <ul class="nav-container">
+      <li class="nav-item account">
+        <a href="https://sephora.sg/account/dashboard" class="my-account">
+          <span class="my-account-icon"></span>
+          <span class="my-account-text">My Account</span>
+        </a>
+      </li>
+      <li class="nav-item points">
+        <span class="nav-link divider">|</span>
+        <a href="https://sephora.sg/account/point_logs" class="nav-link">{{pointsLeft}} Points</a>
+      </li>
+    </ul>
+  </div>
 <div id="main" class="wall">
 </div>
 <div id="result" class="result">
 </div>
 <div id="tools" class="tools">
-     <button
-        v-for="value in btns"
-        @click="onClick(value)"
-        class="pure-button"
-        :class="{ 'button-error': selected == value}"
-       >{{value}}</button>
+    <p>Select the points you wish to use and click start</p>
+    <button
+      class="pure-button button-red"
+    >
+      Go to shopping bag
+    </button>
+    <button
+      v-for="value in btns"
+      @click="onClick(value)"
+      class="pure-button points"
+      :class="{ 'button-black': selected == value && pointsLeft > value }"
+      :disabled="pointsLeft < value"
+      >{{value}} Points</button>
     <button
        class="pure-button"
        @click="toggle"
-       :class="{'button-secondary': !running,
-               'button-success': running}">{{running?'Stop!':'Start'}}</button>
-    <button class="pure-button button-warning" @click="reset">Reset</button>
+       :disabled="pointsLeft < selected"
+       :class="{'button-green': !running,
+               'button-purple': running}">{{running?'Stop!':'Start'}}</button>
+</div>
 </div>
 <script type="text/javascript" src="js/zepto.js"></script>
 <script type="text/javascript" src="js/vue.js"></script>
@@ -169,39 +250,60 @@
         var getKey = function(item){
             return item.name + '-' + item.phone;
         };
-        var createHTML = function(){
-            var html = [ '<ul>' ];
+        var createHTML = function(givenPoints){
+            var rewardsList = []
             rewards.forEach(function(item, index){
                 item.index = index;
                 var key = getKey(item);
-                html.push('<li><a href="#" style="color: white">' + item.name + '<img src="'+item.image+'"/></a></li>');
+                var possibility = points[givenPoints.toString()].possibilityForTiers[item.tierID];
+                var numOfTimes = Math.ceil(possibility * 33);
+
+                for (var i = 0; i < numOfTimes; i++) {
+                  rewardsList.push('<li><a href="#" style="color: white">' + item.name + '<img src="'+item.image+'"/></a></li>');
+                }
             });
+
+            var html = [ '<ul>' ];
+            html = html.concat(rewardsList.sort(() => Math.random() - 0.5));
             html.push('</ul>');
             return html.join('');
         };
+        var drawCanvas = function(givenPoints){
+          var canvas = document.getElementById('myCanvas');
+          canvas.innerHTML = createHTML(givenPoints);
+          TagCanvas.Start('myCanvas', '', {
+              textColour: null,
+              initial: speed(),
+              dragControl: 1,
+              textHeight: 14,
+              imageMode: 'image',
+              imageScale: 0.1,
+              imagePosition: 'top'
+          });
+        };
         var rewardsByPoint = function (givenPoints) {
+            var possibilityForTiers = points[givenPoints.toString()].possibilityForTiers;
             return rewards
-                    .filter(function(reward, _index){
-                        return points[givenPoints.toString()].posibilityForTiers.keys.includes(tierID);
+                    .map(function(reward, _index){
+                        return {
+                          name: reward.name,
+                          image: reward.image,
+                          score: possibilityForTiers[reward.tierID]
+                        }
                     })
         };
         var drawing = function (givenPoints) {
             // return rewardsByPoint
-        }
+        };
         var lottery = function(givenPoints){
             var list = canvas.getElementsByTagName('a');
             var ret = rewardsByPoint(givenPoints)
-                .map(function(m){
-                    return Object.assign({
-                      score: Math.random()
-                    }, m);
-                })
                 .sort(function(a, b){
                     return a.score - b.score;
                 })
-                .slice(0, count)
+                .slice(0, 1)
                 .map(function(m){
-                  return m.name + '<br/>' + m.phone;
+                  return '<p>Congratulations!<br/>You have won</p><p style="font-weight: bold;">' + m.name + '</p>' + '<img src="' + m.image + '"/>';
                 });
             return ret;
         };
@@ -211,8 +313,9 @@
         canvas.height = document.body.offsetHeight;
         document.getElementById('main').appendChild(canvas);
         new Vue({
-            el: '#tools',
+            el: '#container',
             data: {
+                pointsLeft: Math.ceil(Math.random() * 2000),
                 selected: 200,
                 running: false,
                 btns: [
@@ -220,16 +323,7 @@
                 ]
             },
             mounted () {
-                canvas.innerHTML = createHTML();
-                TagCanvas.Start('myCanvas', '', {
-                    textColour: null,
-                    initial: speed(),
-                    dragControl: 1,
-                    textHeight: 14,
-                    imageMode: 'both',
-                    imageScale: 0.2,
-                    imagePosition: 'top'
-                });
+                drawCanvas(this.selected)
             },
             methods: {
                 reset: function(){
@@ -242,13 +336,16 @@
                     $('#result').css('display', 'none');
                     $('#main').removeClass('mask');
                     this.selected = num;
+                    drawCanvas(this.selected)
                 },
                 toggle: function(){
                     if(this.running){
                         TagCanvas.SetSpeed('myCanvas', speed());
                         var ret = lottery(this.selected);
+                        this.pointsLeft -= this.selected;
+
                         if (ret.length === 0) {
-                            $('#result').css('display', 'block').html('<span>This campaign has ended</span>');
+                            $('#result').css('display', 'block').html('<span>This campaign has ended.</span>');
                             return
                         }
                         $('#result').css('display', 'block').html('<span>' + ret.join('</span><span>') + '</span>');

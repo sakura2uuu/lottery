@@ -1,37 +1,37 @@
 var rewards = [
   {
-    name: 'Supergoop! SuperScreen Daily Moisturizer SPF 50 (1.5ml)',
-    image: 'img/Supergoop-SuperScreen-Daily-Moisturizer-SPF-50-1-5ml.png',
+    name: 'FENTY BEAUTY Gloss Bomb Universal Lip Luminizer',
+    image: 'img/265075374013212.png',
     tierID: 3
   },
   {
-    name: 'Smashbox Always On LL (Bawse)',
-    image: 'img/Smashbox_AlwaysOnLiquidLipstickBawse.png',
+    name: 'SEPHORA COLLECTION Waterproof Triple Action Cleansing Water + Oil',
+    image: 'img/zoom_34641_SephoraCollection_WaterproofTripleActionCleansingWaterOil_50ml_WEB_e82b5519d07a2345e928dc569921a547d44735fd_1523780279.png',
     tierID: 3
   },
   {
-    name: 'Smashbox Primed & Ready Set',
-    image: 'img/SmashboxPrimeReady.png',
+    name: "FENTY BEAUTY Pro Filt'r Soft Matte Longwear Foundation",
+    image: 'img/Fenty_Beauty_Rihanna_Pro_Filtr_Soft_Matte_Longwear-normal.png',
     tierID: 2
   },
   {
-    name: 'Sigma Beauty Sigma Spa Brush Cleaning Mat',
-    image: 'img/Sigma_DeluxeSpaMat.jpg',
+    name: "Beautyblender BBF Beauty's Best Friend",
+    image: 'img/sku_20819_color_bbf_main.png',
     tierID: 2
   },
   {
-    name: 'Tatcha The Water Cream (5ml)',
-    image: 'img/TheWaterCream.jpg',
+    name: 'FARSALI Unicorn Essence',
+    image: 'img/unicornEssence10ml_1024x1024_db01083d-e58b-4c19-bf25-eaabef155f0f_1024x1024.png',
     tierID: 2
   },
   {
-    name: 'Versace Dylan Blue Pour Femme Eau De Parfum Minature (5ml) ',
-    image: 'img/VDPF_Miniatures.jpg',
+    name: 'FRESH Rose Deep Hydration Facial Toner',
+    image: 'img/h5627001_809280126758_171123122219_01_1200.png',
     tierID: 2
   },
   {
-    name: 'Sephora Collection It Is Never Too Much! Lip Palette',
-    image: "img/Sephora_Collection_It'Is_Never_Too_Much_Lip_Palette.jpg",
+    name: 'Dior Addict Lip Glow Color Reviving Lip Balm',
+    image: 'img/Dior+Addict+Lip+Glow+Color+Reviving+Lip+Balm.png',
     tierID: 2
   },
   {
@@ -41,7 +41,12 @@ var rewards = [
   },
   {
     name: 'Exclusive Meet & Greet with Rihanna',
-    image: 'img/20_percent_off_dc.jpg',
+    image: 'img/meet_and_greet.jpg',
+    tierID: 1
+  },
+  {
+    name: 'Free Beauty Services',
+    image: 'img/beauty_services.jpg',
     tierID: 1
   }
 ]
